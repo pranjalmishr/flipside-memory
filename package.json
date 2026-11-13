@@ -1,0 +1,20 @@
+{
+  "name": "flipside-memory",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A colorful, accessible memory matching game with six collections and a local personal leaderboard.",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "dev": "node scripts/serve.cjs",
+    "build": "node scripts/build.cjs",
+    "test": "node --test tests/*.test.cjs",
+    "test:browser": "node tests/browser.cjs && node tests/browser-themes.cjs && node tests/browser-player.cjs && node tests/browser-release.cjs",
+    "test:release": "node tests/browser-release.cjs"
+  },
+  "devDependencies": {
+    "@fontsource-variable/dm-sans": "5.3.0",
+    "@fontsource-variable/manrope": "5.3.0",
+    "axe-core": "4.14.0",
+    "playwright": "1.64.1"
+  }
+}

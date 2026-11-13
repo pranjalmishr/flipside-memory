@@ -1,0 +1,41 @@
+name: Game verification
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+concurrency:
+  group: flipside-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CI: true
+      BROWSER_CHANNEL: chromium
+      GAME_URL: http://127.0.0.1:5195
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium firefox webkit
+      - name: Start production-file preview
+        run: |
+          SERVE_DIR=dist npm run dev > /tmp/flipside-server.log 2>&1 &
+          for i in $(seq 1 30); do curl -fsS "$GAME_URL" >/dev/null && exit 0; sleep 1; done
+          cat /tmp/flipside-server.log
+          exit 1
+      - run: npm run test:browser
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: browser-screenshots
+          path: artifacts/
+          retention-days: 7

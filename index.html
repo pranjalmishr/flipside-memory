@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f3fc">
+  <meta name="description" content="A little flip. A big brain boost. Play FlipSide, a colorful memory matching game with three levels of feel-good focus.">
+  <title>FlipSide — Find your match</title>
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <link rel="preload" href="fonts/dm-sans-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="themes.js"></script>
+  <script defer src="engine.js"></script>
+  <script defer src="storage.js"></script>
+  <script defer src="audio.js"></script>
+  <script defer src="game.js"></script>
+</head>
+<body>
+  <svg class="svg-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs>
+      <symbol id="i-spark" viewBox="0 0 24 24"><path d="m12 2 2.6 7.4L22 12l-7.4 2.6L12 22l-2.6-7.4L2 12l7.4-2.6Z"/></symbol>
+      <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
+      <symbol id="i-reset" viewBox="0 0 24 24"><path d="M3 10a9 9 0 1 1 2 8M3 4v6h6"/></symbol>
+      <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+      <symbol id="i-moves" viewBox="0 0 24 24"><path d="M4 7h15m-4-4 4 4-4 4M20 17H5m4-4-4 4 4 4"/></symbol>
+      <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M8 3h8v7a4 4 0 0 1-8 0ZM8 5H4v3a4 4 0 0 0 4 4m8-7h4v3a4 4 0 0 1-4 4m-4 2v6m-4 0h8"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+      <symbol id="i-sound" viewBox="0 0 24 24"><path d="M11 4 6 8H3v8h3l5 4ZM15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/></symbol>
+      <symbol id="i-mute" viewBox="0 0 24 24"><path d="M11 4 6 8H3v8h3l5 4Zm5 5 6 6m0-6-6 6"/></symbol>
+      <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 4 2c-1 .6-1.5 1-1.5 2m0 3h.01"/></symbol>
+      <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></symbol>
+      <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+      <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 2.5 2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3-5.8 3 1.1-6.5-4.7-4.6 6.5-.9Z"/></symbol>
+      <symbol id="i-style" viewBox="0 0 24 24"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3" fill="currentColor" stroke="none"/><circle cx="15" cy="17" r="3" fill="currentColor" stroke="none"/></symbol>
+      <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 17V5l11-2v12M9 8l11-2"/><ellipse cx="6" cy="18" rx="3" ry="2"/><ellipse cx="17" cy="16" rx="3" ry="2"/></symbol>
+      <symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14" stroke-width="4"/></symbol>
+      <symbol id="i-play" viewBox="0 0 24 24"><path d="m8 4 12 8-12 8Z"/></symbol>
+      <symbol id="i-shuffle" viewBox="0 0 24 24"><path d="M3 5h3c5 0 7 14 12 14h3m-4-4 4 4-4 3M3 19h3c5 0 7-14 12-14h3m-4-3 4 3-4 4"/></symbol>
+      <symbol id="i-hint" viewBox="0 0 24 24"><path d="M8 16c0-3-3-4-3-8a7 7 0 0 1 14 0c0 4-3 5-3 8Zm0 4h8m-6 3h4M12 4v5m-2-2 2 2 2-2"/></symbol>
+    </defs>
+  </svg>
+  <div class="page-shell">
+    <header class="site-header">
+      <a class="brand" href="./" aria-label="FlipSide home">
+        <span class="brand-mark" aria-hidden="true"><span></span><span><svg><use href="#i-spark"/></svg></span></span>
+        <span>flip<span class="brand-side">side</span><span class="brand-dot">.</span></span>
+      </a>
+      <span class="header-tagline">A little play goes a long way.</span>
+      <nav aria-label="Game options">
+        <button id="sound-toggle" class="header-button" type="button" aria-pressed="false" title="Toggle sound effects"><svg class="icon"><use href="#i-mute"/></svg><span>Sound off</span></button>
+        <button id="music-toggle" class="header-button" type="button" aria-pressed="false" title="Toggle background music"><svg class="icon"><use href="#i-music"/></svg><span>Music off</span></button>
+        <button id="help-button" class="header-button" type="button"><svg class="icon"><use href="#i-help"/></svg><span>How to play</span></button>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="page-title">
+        <div class="hero-doodle doodle-left" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M51 10v20M21 30l15 11M17 61l19-5M75 25 63 41"/><path class="doodle-star" d="m63 57 5 13 14 5-14 5-5 14-5-14-14-5 14-5Z"/></svg></div>
+        <p class="eyebrow"><span></span> THE FEEL-GOOD BRAIN BREAK</p>
+        <h1 id="page-title">Find your match.<br> Meet your <span>mindful moment.<svg viewBox="0 0 430 20" preserveAspectRatio="none" aria-hidden="true"><path d="M4 13Q212-4 426 10M50 17Q240 7 380 15"/></svg></span></h1>
+        <p class="hero-description">Flip a card. Find its pair. Give your brain a little happy workout.</p>
+        <div class="hero-doodle doodle-right" aria-hidden="true"><span class="mini-card">✦</span><span class="mini-card">✦</span><svg class="floating-spark"><use href="#i-spark"/></svg></div>
+      </section>
+
+      <div class="game-layout">
+        <aside class="sidebar" aria-label="Game setup">
+          <section class="setup-panel panel">
+            <div class="section-kicker">MAKE IT YOURS</div>
+            <h2>Pick your pace<span class="purple-dot">.</span></h2>
+            <p class="section-description">A quick warm-up or a real challenge?</p>
+            <fieldset class="difficulty-options">
+              <legend class="sr-only">Choose difficulty for your next game</legend>
+              <label class="difficulty-option" data-level="easy">
+                <input type="radio" name="difficulty" value="easy" checked>
+                <span class="level-icon level-easy" aria-hidden="true">🌱</span>
+                <span class="level-copy"><strong>Easy</strong><small>4 × 4 grid <span>·</span> 8 pairs</small></span>
+                <span class="radio-check" aria-hidden="true"><svg class="icon"><use href="#i-check"/></svg></span>
+              </label>
+              <label class="difficulty-option" data-level="medium">
+                <input type="radio" name="difficulty" value="medium">
+                <span class="level-icon level-medium" aria-hidden="true">⚡</span>
+                <span class="level-copy"><strong>Medium</strong><small>4 × 5 grid <span>·</span> 10 pairs</small></span>
+                <span class="radio-check" aria-hidden="true"><svg class="icon"><use href="#i-check"/></svg></span>
+              </label>
+              <label class="difficulty-option" data-level="hard">
+                <input type="radio" name="difficulty" value="hard">
+                <span class="level-icon level-hard" aria-hidden="true">🔥</span>
+                <span class="level-copy"><strong>Hard</strong><small>6 × 6 grid <span>·</span> 18 pairs</small></span>
+                <span class="radio-check" aria-hidden="true"><svg class="icon"><use href="#i-check"/></svg></span>
+              </label>
+            </fieldset>
+            <button id="start-button" type="button" class="primary-button"><span>Let’s play</span><svg class="icon"><use href="#i-arrow"/></svg></button>
+            <p id="setup-note" class="setup-note">A flip or power-up starts your timer.</p>
+            <button id="customize-button" class="customize-trigger" type="button" aria-haspopup="dialog">
+              <span class="vibe-icon" id="vibe-icon" aria-hidden="true">🍓</span>
+              <span><strong id="current-vibe">Fruits · Daydream</strong><small>Card collections, backs & colors</small></span>
+              <svg class="icon"><use href="#i-style"/></svg>
+            </button>
+            <div class="player-tools"><button id="leaderboard-button" type="button"><svg class="icon"><use href="#i-trophy"/></svg>My leaderboard</button><button id="audio-button" type="button"><svg class="icon"><use href="#i-music"/></svg>Audio & volume</button></div>
+          </section>
+
+          <section class="tip-panel">
+            <div class="tip-heading"><span aria-hidden="true">💡</span><h2>A little tip</h2></div>
+            <p>Slow down and spot the patterns. A good memory is built one pair at a time.</p>
+            <div class="tip-bottom"><span>YOU’VE GOT THIS</span><svg class="icon"><use href="#i-heart"/></svg></div>
+          </section>
+          <div class="best-record"><span class="record-icon"><svg class="icon"><use href="#i-trophy"/></svg></span><div><span>YOUR BEST · <span id="best-level">EASY</span></span><strong id="best-time">A fresh start awaits</strong><small id="best-score">Best score: —</small></div></div>
+        </aside>
+
+        <section class="play-area" aria-labelledby="board-title">
+          <div class="stats" aria-label="Game statistics">
+            <div class="stat-card"><span class="stat-icon score-icon"><svg class="icon"><use href="#i-trophy"/></svg></span><div><span class="stat-label">SCORE</span><strong id="score">0</strong></div><span class="stat-decoration" aria-hidden="true">✦</span></div>
+            <div class="stat-card"><span class="stat-icon moves-icon"><svg class="icon"><use href="#i-moves"/></svg></span><div><span class="stat-label">MOVES</span><strong id="moves">0</strong></div></div>
+            <div class="stat-card"><span class="stat-icon time-icon"><svg class="icon"><use href="#i-clock"/></svg></span><div><span class="stat-label">TIME</span><strong id="timer">00:00</strong></div></div>
+          </div>
+          <div class="performance-strip" aria-label="Performance and rewards">
+            <span class="accuracy-label"><span class="accuracy-dot" aria-hidden="true"></span>Accuracy <strong id="accuracy">—</strong></span>
+            <span id="bonus-preview" class="bonus-preview"><span id="bonus-preview-label">Finish bonus up to</span> <strong id="bonus-preview-value">+300</strong></span>
+          </div>
+          <div class="game-controls" aria-label="Play controls">
+            <button id="pause-button" type="button" disabled><svg class="icon"><use href="#i-pause"/></svg><span>Pause</span></button>
+            <button id="hint-button" type="button" disabled title="Reveal one matching pair for 1.5 seconds. No points or moves are awarded."><svg class="icon"><use href="#i-hint"/></svg><span>Hint</span><strong id="hints-left">3</strong></button>
+            <button id="shuffle-button" type="button" disabled title="Shuffle only unmatched cards. Matched cards stay in place."><svg class="icon"><use href="#i-shuffle"/></svg><span>Shuffle</span><strong id="shuffles-left">2</strong></button>
+          </div>
+          <div class="board-panel panel">
+            <div class="board-toolbar"><div><h2 id="board-title">The playing field</h2><span id="active-level" class="level-badge">Easy breezy</span></div><button id="restart-button" class="restart-button" type="button" disabled><svg class="icon"><use href="#i-reset"/></svg><span>Restart</span></button></div>
+            <p id="collection-caption" class="collection-caption">FRUITS COLLECTION</p>
+            <div class="board-stage">
+              <div id="board" class="card-grid" aria-label="Easy memory board, 4 rows and 4 columns"></div>
+              <div id="pause-overlay" class="pause-overlay" hidden><span class="pause-bubble" aria-hidden="true"><svg class="icon"><use href="#i-pause"/></svg></span><h3 id="pause-title">A little breather.</h3><p id="pause-description">Your timer is stopped. Your cards are safe.</p><button id="resume-button" class="primary-button" type="button"><svg class="icon"><use href="#i-play"/></svg>Resume game</button></div>
+            </div>
+            <div class="board-footer"><span id="board-message"><span class="status-dot"></span> Pick your pace, then let’s play</span><span class="pairs-counter"><svg class="icon"><use href="#i-check"/></svg><strong id="pairs-count">0 / 8</strong> pairs</span></div>
+            <div class="progress-track" role="progressbar" aria-label="Matching pairs found" aria-valuemin="0" aria-valuemax="8" aria-valuenow="0"><span id="progress-fill"></span></div>
+          </div>
+          <p class="below-board"><svg class="icon"><use href="#i-spark"/></svg> Less scrolling. More sparkling neurons.</p>
+          <p id="save-status" class="save-status" role="status">Autosave ready · stays on this browser</p>
+        </section>
+      </div>
+    </main>
+    <footer class="site-footer"><span>Made for curious minds & happy little breaks.</span><span>Flip. Match. Feel good. <svg class="icon"><use href="#i-heart"/></svg></span></footer>
+  </div>
+
+  <p id="announcer" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
+
+  <dialog id="audio-dialog" class="game-dialog audio-dialog" aria-labelledby="audio-title">
+    <button class="dialog-close" type="button" data-close-dialog="audio-dialog" aria-label="Close audio controls"><svg class="icon"><use href="#i-close"/></svg></button>
+    <p class="section-kicker">SET THE MOOD</p><h2 id="audio-title">A little sound, your way.</h2><p class="audio-intro">Gentle effects and an original, endlessly mellow loop. Both are optional.</p>
+    <section class="audio-section"><label class="audio-switch"><span><strong>Sound effects</strong><small>Flips, matches, misses & little wins</small></span><input id="effects-enabled" type="checkbox" role="switch"></label><label class="volume-label" for="effects-volume">Effects volume <output id="effects-volume-label" for="effects-volume">55%</output></label><input id="effects-volume" type="range" min="0" max="100" value="55" aria-label="Sound effects volume"></section>
+    <section class="audio-section"><label class="audio-switch"><span><strong>Background music</strong><small>Daydream · original synthesized ambience</small></span><input id="music-enabled" type="checkbox" role="switch"></label><label class="volume-label" for="music-volume">Music volume <output id="music-volume-label" for="music-volume">25%</output></label><input id="music-volume" type="range" min="0" max="100" value="25" aria-label="Background music volume"></section>
+    <p id="audio-status" class="customize-note" role="status">Audio is off. Turn on whatever feels good.</p><p class="customize-timer-note">Audio stops when you pause or leave the tab. A click may be needed after reloading to enable playback.</p><button class="primary-button" type="button" data-close-dialog="audio-dialog">Sounds good<svg class="icon"><use href="#i-check"/></svg></button>
+  </dialog>
+
+  <dialog id="leaderboard-dialog" class="game-dialog leaderboard-dialog" aria-labelledby="leaderboard-title">
+    <button class="dialog-close" type="button" data-close-dialog="leaderboard-dialog" aria-label="Close leaderboard"><svg class="icon"><use href="#i-close"/></svg></button>
+    <p class="section-kicker">YOUR PERSONAL HALL OF FEEL-GOOD</p><h2 id="leaderboard-title">Little flips. Personal bests.</h2><p class="leaderboard-intro">Your top 10 finishes per level, saved only on this browser. Highest score first; faster time breaks a tie. Viewing this page pauses active play.</p>
+    <div class="leaderboard-filters"><label>Difficulty<select id="leaderboard-level"><option value="easy">Easy · 8 pairs</option><option value="medium">Medium · 10 pairs</option><option value="hard">Hard · 18 pairs</option></select></label><label>Play style<select id="leaderboard-mode"><option value="all">All finishes</option><option value="solo">Unassisted</option><option value="assisted">With power-ups</option></select></label></div>
+    <div class="leaderboard-summary"><div><span>BEST SCORE</span><strong id="leaderboard-best">—</strong></div><div><span>FASTEST</span><strong id="leaderboard-fastest">—</strong></div><div><span>SAVED FINISHES</span><strong id="leaderboard-count">0</strong></div></div>
+    <ol id="leaderboard-list" class="leaderboard-list"></ol><div id="leaderboard-empty" class="leaderboard-empty"><span aria-hidden="true">🏆</span><h3>Your next personal best awaits.</h3><p>Complete a game to see your score, stars, time, moves, and accuracy here.</p></div>
+    <p class="leaderboard-note">Using a hint or shuffle marks that finish “Assisted.” Scores are personal, editable local data—not a verified online ranking.</p><button class="primary-button" type="button" data-close-dialog="leaderboard-dialog">Back to the board<svg class="icon"><use href="#i-arrow"/></svg></button>
+  </dialog>
+
+  <dialog id="customize-dialog" class="game-dialog customize-dialog" aria-labelledby="customize-title">
+    <button class="dialog-close" type="button" data-close-dialog="customize-dialog" aria-label="Close customization"><svg class="icon"><use href="#i-close"/></svg></button>
+    <p class="section-kicker">STYLE YOUR LITTLE BRAIN BREAK</p>
+    <h2 id="customize-title">Make it your vibe<span class="purple-dot">.</span></h2>
+    <p class="customize-description">A fresh collection. A favorite color. A little more you.</p>
+    <fieldset class="customize-group"><legend>Card collection <small>20 distinct designs in every collection</small></legend><div id="collection-options" class="collection-options"></div></fieldset>
+    <fieldset class="customize-group"><legend>Card backs <small>Just a look. Never a clue.</small></legend><div id="back-options" class="back-options"></div></fieldset>
+    <fieldset class="customize-group"><legend>Board color</legend><div id="board-options" class="board-options"></div></fieldset>
+    <fieldset class="customize-group"><legend>Appearance</legend><div id="appearance-options" class="appearance-options"></div></fieldset>
+    <p id="customize-note" class="customize-note" role="status">Preview a collection before you play. Style changes apply instantly.</p>
+    <p class="customize-timer-note">During a game, the timer keeps running while you customize.</p>
+    <button class="primary-button" type="button" data-close-dialog="customize-dialog">That’s my vibe<svg class="icon"><use href="#i-check"/></svg></button>
+  </dialog>
+
+  <dialog id="help-dialog" class="game-dialog" aria-labelledby="help-title">
+    <button class="dialog-close" type="button" data-close-dialog="help-dialog" aria-label="Close instructions"><svg class="icon"><use href="#i-close"/></svg></button>
+    <span class="dialog-emoji" aria-hidden="true">🧠</span>
+    <p class="section-kicker">YOUR TWO-MINUTE BRAIN BREAK</p>
+    <h2 id="help-title">Little flips. Big wins.</h2>
+    <ol class="instructions"><li><span>1</span><div><strong>Choose your challenge</strong><p>Pick Easy, Medium or Hard and press Let’s play.</p></div></li><li><span>2</span><div><strong>Flip two cards</strong><p>Find matching pictures. Matches stay face up; different pictures flip back after one second.</p></div></li><li><span>3</span><div><strong>Collect every pair</strong><p>Earn 100 points per pair. Each two-card attempt is one move. Your first flip or power-up starts the timer; the final match stops it.</p></div></li></ol>
+    <p class="keyboard-note">Make it your vibe: choose Animals, Emojis, Fruits, Space, Nature, or Technology. Collection changes apply to the next game; card backs, board colors, and appearance change instantly without resetting play. Preferences are saved on this browser when storage is available.</p>
+    <section class="scoring-guide"><h3>A little help, when you need it</h3><p><strong>3 hints:</strong> briefly reveal an unmatched pair for 1.5 seconds. <strong>2 shuffles:</strong> move only unmatched cards. Finish any open turn first. Power-ups start the timer, never award points or moves, and mark the result Assisted.</p><p><strong>Pause / Resume:</strong> hides the board and freezes the timer and flip-back delays. Leaving the tab pauses automatically; returning never resumes without you.</p><p><strong>Autosave:</strong> reloads reopen your saved game paused, without counting time away. Matched cards, order, moves, time, and remaining power-ups are restored; unfinished reveals close. Completed games appear in My leaderboard.</p></section>
+    <section class="scoring-guide" aria-labelledby="scoring-title">
+      <h3 id="scoring-title">Make every match count <span aria-hidden="true">★</span></h3>
+      <p><strong>Accuracy</strong> = matched pairs ÷ completed two-card moves × 100. Before your first move, accuracy is shown as —.</p>
+      <p><strong>Speed bonus:</strong> 5 points per full second saved. Beat 01:00 on Easy, 01:30 on Medium, or 03:00 on Hard. The bonus is added once, when you finish.</p>
+      <ul><li><strong>★★★</strong> At least 80% accuracy, within the level’s target time.</li><li><strong>★★</strong> At least 50% accuracy, within twice the target time.</li><li><strong>★</strong> Every other completed game. Finishing is a win!</li></ul>
+    </section>
+    <p class="keyboard-note">Keyboard friendly: Tab to a card, use the arrow keys to move, and Enter or Space to flip. P pauses/resumes, H uses a hint, and S shuffles outside forms and dialogs. Escape closes this window.</p>
+    <button type="button" class="primary-button" data-close-dialog="help-dialog">Got it. Let’s flip!<svg class="icon"><use href="#i-arrow"/></svg></button>
+  </dialog>
+
+  <dialog id="win-dialog" class="game-dialog win-dialog" aria-labelledby="win-title">
+    <button class="dialog-close" type="button" data-close-dialog="win-dialog" aria-label="Close results and view matched cards"><svg class="icon"><use href="#i-close"/></svg></button>
+    <p class="section-kicker">YOUR ROUND, WRAPPED UP</p>
+    <div id="win-stars" class="result-stars" role="img" aria-label="0 out of 3 stars">
+      <svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg><svg aria-hidden="true"><use href="#i-star"/></svg>
+    </div>
+    <h2 id="win-title">Look at that big brain!</h2>
+    <p id="win-description">You found every pair.</p>
+    <div class="result-total"><span>TOTAL SCORE</span><strong id="win-score">0</strong><small id="rating-label">Stars awarded at the finish</small></div>
+    <div class="win-stats"><div><span>Time</span><strong id="win-time">00:00</strong></div><div><span>Moves</span><strong id="win-moves">0</strong></div><div><span>Accuracy</span><strong id="win-accuracy">—</strong></div></div>
+    <div class="score-breakdown" aria-label="Score breakdown">
+      <div><span id="pair-points-label">Matching pairs</span><strong id="win-pair-points">0</strong></div>
+      <div class="bonus-row"><span>Speed bonus <small id="bonus-target">Target 01:00</small></span><strong id="win-bonus">+0</strong></div>
+      <p id="bonus-explanation">5 points per full second saved.</p>
+    </div>
+    <p id="rating-feedback" class="rating-feedback"></p>
+    <p id="win-assistance" class="win-assistance"></p>
+    <p id="win-record" class="win-record"></p>
+    <button id="play-again" type="button" class="primary-button">One more round<svg class="icon"><use href="#i-reset"/></svg></button>
+    <button id="win-leaderboard" type="button" class="text-button">See my leaderboard</button>
+    <button type="button" class="text-button" data-close-dialog="win-dialog">Admire my matches</button>
+  </dialog>
+  <div id="confetti" class="confetti" aria-hidden="true"></div>
+  <noscript><div class="noscript-message">Enable JavaScript to play FlipSide. No account or downloads needed.</div></noscript>
+</body>
+</html>

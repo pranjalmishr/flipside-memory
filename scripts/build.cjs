@@ -1,0 +1,10 @@
+const fs = require('node:fs');
+const path = require('node:path');
+const root = path.resolve(__dirname, '..');
+const output = path.join(root, 'dist');
+const files = ['index.html', 'styles.css', 'engine.js', 'themes.js', 'audio.js', 'storage.js', 'game.js', 'icon.svg'];
+fs.rmSync(output, { recursive: true, force: true });
+fs.mkdirSync(output, { recursive: true });
+for (const file of files) fs.copyFileSync(path.join(root, file), path.join(output, file));
+fs.cpSync(path.join(root, 'fonts'), path.join(output, 'fonts'), { recursive: true });
+console.log(`Built ${files.length} application files and local fonts into dist/. Tests, documentation, and tooling are not published.`);

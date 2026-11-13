@@ -1,0 +1,9 @@
+.git/
+.vercel/
+.env
+.env.*
+node_modules/
+artifacts/
+tests/
+.github/
+README.md
