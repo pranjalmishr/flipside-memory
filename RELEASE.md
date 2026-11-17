@@ -7,6 +7,16 @@ Released 13 November 2026.
 - **Vercel project:** `flipside-memory`, in the existing `pranjal-mishras-projects-52970ad6` Hobby team.
 - **Production branch:** `main`; GitHub repository connected to Vercel.
 
+## Daily challenge update — 17 November 2026
+
+- Added a real shared UTC daily puzzle, one resumable ranked attempt per guest, minimum-moves/server-time leaderboard, once-per-day credit rewards, current/longest consecutive-day streaks, countdown, archive, and result sharing.
+- Authorized backend: `nitre-d8cdd`, new `flipsideDaily/v1` namespace and dedicated keyless FlipSide Vercel identity. Billing stays disabled, and existing live Firestore rules were verified unchanged.
+- Server-authoritative turns, versions, idempotent requests, strict action fields, origin/auth validation, and transactional completion/reward writes. No browser-submitted scores or offline ranked submissions.
+- Practice remains offline and separate. Daily disables timer pause, hints, shuffle, and resetting for ranked play; its clock includes time away and latency.
+- Resolved a live Firebase Admin 14 / CommonJS–ESM incompatibility using a pinned compatible runtime and a dedicated module-load regression test. Patched its UUID transitive advisory; dependency audit is clean.
+- Verification: **168 total unit tests**, **34 controlled daily browser checks**, and **61 real production daily acceptance checks** pass. Existing practice browser checks were re-run. Known temporary acceptance guests and their FlipSide records were deleted; the published daily puzzle remains.
+- Details and limitations: [Daily challenge implementation](docs/DAILY.md).
+
 ## Polish and fixes
 
 - Locally bundled, licensed variable fonts replace a blocking third-party font request. No font/image/music/runtime requests leave the application's origin.

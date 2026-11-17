@@ -2,7 +2,7 @@
 
 **Play live: https://flipside-memory.vercel.app** · [Private GitHub repository](https://github.com/pranjalmishr/flipside-memory)
 
-A standalone, responsive memory-matching game. Existing workspace applications are not modified. No build step, account, API key, or runtime libraries are required.
+A responsive memory-matching game with offline, browser-local practice and an optional **real online daily challenge**. Practice needs no account, API key, server, or runtime libraries. Daily competition uses an isolated FlipSide namespace in the authorized existing Firebase project; see [Daily challenge](docs/DAILY.md).
 
 ## Play
 
@@ -14,7 +14,7 @@ python3 -m http.server 5195 --bind 127.0.0.1
 
 Then visit **http://127.0.0.1:5195**.
 
-DM Sans and Manrope are bundled locally with their font licenses in `fonts/`; there are no external font, image, music, or application requests. System fonts remain a fallback if a browser restricts local-file font access.
+DM Sans and Manrope are bundled locally with their font licenses in `fonts/`; practice makes no external font, image, music, or application requests. Daily mode connects to the game's own API and Firebase Auth. System fonts remain a fallback if a browser restricts local-file font access.
 
 For reproducible development and production packaging, use Node 22 or newer:
 
@@ -28,6 +28,17 @@ npm run build               # allow-listed production files only, in dist/
 ```
 
 The direct-file option needs no Node installation or build. The build step is for Vercel publishing and excludes tests, documentation, local environment files, and tooling.
+
+## Daily memory challenge — online
+
+- Open **Play the daily challenge**. Everyone gets the same **4 × 5 / 10-pair** arrangement for the UTC date, with a fresh puzzle at **00:00 UTC**.
+- Real shared top-50 leaderboard: **fewest moves first, server time as the tie-breaker**, plus your own confirmed rank.
+- One resumable ranked attempt per guest per day. Daily turns and completion results are server-confirmed; no hints, shuffles, resets, or timer pauses in ranked play. Time begins on the first flip and includes time away and network latency. Finish before UTC reset.
+- A confirmed completion earns **100 daily reward credits**, with a **10-credit consecutive-day bonus** capped at **160 credits** per day. Credits are an achievement balance, not cash or additional ranking points. One reward per UTC date, credited transactionally.
+- Current and longest streaks, credit balance, seven-day completion strip, reset countdown, recent leaderboards, and shareable results are included. Missing a full UTC day resets only the active streak.
+- Daily identity is a browser-saved anonymous guest with a generated public alias. Clearing that identity or changing browser does not transfer streaks; no cross-device account linking is provided.
+- Opening Daily pauses an in-progress practice round. Practice saves, scores, sound controls, themes, and power-ups are preserved and separate from the online daily game.
+- Daily needs a connection. No offline/fake ranked scores are generated. Full data/security, quota, anonymous-player, and timing limitations are documented in [docs/DAILY.md](docs/DAILY.md).
 
 ## Features and rules
 
@@ -47,7 +58,7 @@ The direct-file option needs no Node installation or build. The build step is fo
 - Keyboard: Tab to a card, arrows to navigate, Home/End for the first/last card, Enter/Space to flip. **P** pauses/resumes, **H** uses a hint, and **S** shuffles (outside form fields and dialogs). Escape dismisses dialogs. Screen-reader card labels and live feedback are included.
 - Responsive layouts from 320 px; card targets are at least 44 × 44 px. Reduced-motion settings disable flips, pop animations, and confetti.
 - Phone play scrolls the board into view. Desktop play uses a compact header and viewport-bounded board so every card stays visible at the tested laptop/desktop sizes. Major controls have 44 px touch targets; all three appearances have automated contrast checks.
-- Corrupt or unavailable browser storage does not prevent gameplay. No tracking or gameplay data is sent to a server.
+- Corrupt or unavailable browser storage does not prevent practice gameplay. Practice sends no tracking or gameplay data to a server. Daily stores its authenticated ranked attempts, results, credits, and streaks in the FlipSide backend.
 
 ## Audio, pause, and power-ups
 
@@ -116,6 +127,8 @@ Open **Card collections, backs & colors** under the start button to make the gam
 | `scripts/build.cjs` | Allow-listed static production build |
 | `vercel.json` | Static hosting, cache policy, CSP, and security headers |
 | `.github/workflows/ci.yml` | Unit, build, gameplay, accessibility, and cross-browser CI |
+| `daily-rules.js`, `daily-client.js`, `daily-ui.js` | UTC/reward rules, isolated guest session, and daily arena interface |
+| `api/daily.js`, `server/` | Authenticated server-authoritative daily turns and shared Firestore rankings |
 
 ## Verification
 
@@ -145,6 +158,7 @@ Verified in Chromium / Google Chrome:
 - **76 additional theme browser checks pass:** all six Hard games, independent appearance controls, preservation of active games, saved and invalid preferences, storage-blocked operation, offline vector artwork, and narrow-screen customization layouts.
 - **61 additional player browser checks pass:** live audio synthesis, independent music/effects/volume controls, pause/resume and frozen reveals, limited hints/shuffles, saved-game recovery without offline time, assisted score filtering, ranking and best scores, persistence, empty/invalid data, unsupported audio, blocked storage, and quota-error recovery.
 - The release suite adds **264 Chromium, Firefox, and WebKit checks** covering all difficulties, seven viewport sizes, exact save recovery, hints/shuffles, keyboard focus/repeat protection, late-result navigation, long timers, local-only assets, and automated WCAG A/AA checks across all skins and dialogs. Automated checks are not a complete accessibility certification or physical-device test.
+- Daily addition: **168 total unit tests**, **34 isolated daily browser checks**, and **61 real production daily checks** passed. Controlled clocks cover streaks, missed days, and UTC rollover; real guests cover cloud state, private-data denial, and shared rankings. See [Daily verification](docs/DAILY.md#development-and-verification).
 - Local release gate: **141 unit tests + 508 browser checks passed**. The public Vercel deployment also passed **94 production release checks**, including all three difficulties, saved-state recovery, accessibility, security headers, and rejection of private/tooling paths. See [RELEASE.md](RELEASE.md).
 - Desktop and phone audio, paused-board, and leaderboard screens were visually inspected, along with the existing game, results, customization, themed boards, and all 40 original vector illustrations. Release screenshots are generated under `artifacts/release/`.
 
@@ -152,7 +166,7 @@ Verified in Chromium / Google Chrome:
 
 - Private repository: **https://github.com/pranjalmishr/flipside-memory**.
 - Vercel project: **flipside-memory**, connected to that repository; production branch `main`.
-- Build: `npm run build`; public directory: `dist/`. No runtime secrets or paid backend services are needed.
+- Build: `npm run build`; public static directory: `dist/`. Practice needs no secrets. Daily uses an encrypted seed and dedicated keyless production federation configuration; no private service-account key or paid backend was added.
 - Vercel publishes only the application and local fonts, with a self-only script/font CSP, frame protection, MIME-sniffing protection, and revalidated application assets.
 - GitHub Actions runs the same test suites against the built files on every `main` push and pull request. Vercel builds pushed commits independently; inspect both checks before treating a release as verified.
 - The final verified production address and release notes are recorded in [RELEASE.md](RELEASE.md).

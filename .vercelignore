@@ -7,3 +7,7 @@ artifacts/
 tests/
 .github/
 README.md
+RELEASE.md
+docs/
+scripts/provision-daily.cjs
+scripts/daily-dev.cjs

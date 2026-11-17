@@ -15,6 +15,9 @@
   <script defer src="storage.js"></script>
   <script defer src="audio.js"></script>
   <script defer src="game.js"></script>
+  <script defer src="daily-rules.js"></script>
+  <script defer src="daily-client.js"></script>
+  <script defer src="daily-ui.js"></script>
 </head>
 <body>
   <svg class="svg-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -100,6 +103,12 @@
             <div class="player-tools"><button id="leaderboard-button" type="button"><svg class="icon"><use href="#i-trophy"/></svg>My leaderboard</button><button id="audio-button" type="button"><svg class="icon"><use href="#i-music"/></svg>Audio & volume</button></div>
           </section>
 
+          <section class="daily-invitation" aria-labelledby="daily-invitation-title">
+            <div class="daily-invitation-top"><span class="daily-tag">ONE DAY. ONE SHARED PUZZLE.</span><span aria-hidden="true">☀️</span></div>
+            <h2 id="daily-invitation-title">Your daily little challenge.</h2>
+            <p>The same cards for everyone. Fewer moves, faster time, a streak worth keeping.</p>
+            <button id="daily-button" type="button">Play the daily challenge<svg class="icon"><use href="#i-arrow"/></svg></button>
+          </section>
           <section class="tip-panel">
             <div class="tip-heading"><span aria-hidden="true">💡</span><h2>A little tip</h2></div>
             <p>Slow down and spot the patterns. A good memory is built one pair at a time.</p>
@@ -142,6 +151,28 @@
   </div>
 
   <p id="announcer" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
+
+  <dialog id="daily-dialog" class="game-dialog daily-dialog" aria-labelledby="daily-title">
+    <button class="dialog-close" type="button" id="daily-close" aria-label="Close daily challenge and return to practice"><svg class="icon"><use href="#i-close"/></svg></button>
+    <p class="section-kicker">A LITTLE FOCUS. A FRESH START. EVERY DAY.</p>
+    <div class="daily-heading"><div><h2 id="daily-title">The daily memory challenge<span class="purple-dot">.</span></h2><p id="daily-subtitle">One shared puzzle. One ranked attempt. A new board at 00:00 UTC.</p></div><span class="daily-date" id="daily-date">TODAY · UTC</span></div>
+    <div class="daily-profile" aria-label="Your daily rewards and streak"><div><span>DAY STREAK <span aria-hidden="true">🔥</span></span><strong id="daily-streak">—</strong></div><div><span>LONGEST STREAK</span><strong id="daily-longest">—</strong></div><div><span>REWARD CREDITS</span><strong id="daily-credits">—</strong></div><div><span>NEXT BOARD IN</span><strong id="daily-countdown">—</strong></div></div>
+    <div class="daily-week" id="daily-week" aria-label="Recent daily completions"></div>
+    <p id="daily-status" class="daily-status" role="status">Connect to load today’s shared puzzle and real rankings.</p>
+    <div class="daily-layout">
+      <section class="daily-play" aria-labelledby="daily-board-title">
+        <div class="daily-board-heading"><h3 id="daily-board-title">Today’s playing field</h3><span id="daily-collection">4 × 5 · 10 pairs</span></div>
+        <div class="daily-play-stats"><div><span>MOVES</span><strong id="daily-moves">0</strong></div><div><span>SERVER TIME</span><strong id="daily-time">00:00</strong></div><div><span>ACCURACY</span><strong id="daily-accuracy">—</strong></div></div>
+        <div id="daily-board" class="card-grid" aria-label="Daily memory board"></div>
+        <div class="daily-board-bottom"><span id="daily-pairs">0 / 10 pairs</span><span>Ranked · no power-ups or timer pauses</span></div>
+        <button id="daily-start" class="primary-button" type="button" disabled>Start today’s challenge<svg class="icon"><use href="#i-arrow"/></svg></button>
+        <section id="daily-finish" class="daily-finish" aria-labelledby="daily-finish-title" hidden><span aria-hidden="true">🏅</span><h3 id="daily-finish-title">Daily challenge complete!</h3><p id="daily-finish-details"></p><strong id="daily-earned"></strong><small id="daily-reward-note">Rewards are credited once per UTC day.</small><button id="daily-share" type="button">Copy my daily result<svg class="icon"><use href="#i-check"/></svg></button></section>
+      </section>
+      <section class="daily-ranking" aria-labelledby="daily-ranking-title"><div class="daily-ranking-heading"><h3 id="daily-ranking-title">Today’s shared leaderboard</h3><button id="daily-refresh" type="button" aria-label="Refresh daily challenge and rankings"><svg class="icon"><use href="#i-reset"/></svg></button></div><label class="daily-history-label" for="daily-history">Challenge date<select id="daily-history"><option value="today">Today</option></select></label><p class="daily-ranking-description">Moves first. Server time breaks a tie.<br>Top 50 finishes, shared across players.</p><p id="daily-player" class="daily-player">Your guest identity loads when you connect.</p><p id="daily-own-rank" class="daily-own-rank"></p><ol id="daily-leaderboard" class="daily-leaderboard"></ol><p id="daily-empty" class="daily-empty">No confirmed finishes yet. Your next match could set the pace.</p></section>
+    </div>
+    <details class="daily-rules"><summary>Fair-play rules, rewards & your streak</summary><p>Everyone receives the same 4 × 5 puzzle for the UTC date. The server reveals only the cards you flip, counts every two-card attempt, and records completion time from the first flip. One resumable ranked attempt per guest per day; reopening never resets moves or time. Complete before the UTC day ends.</p><p>The ranked clock keeps running while this window is closed, the tab is hidden, or your connection is interrupted. Hints, shuffles, and timer pauses are practice-only. Confirmed daily finishes are ranked by the fewest moves, then fastest time.</p><p>Your first daily finish earns 100 reward credits plus 10 per prior consecutive day, capped at 160 credits. Credits are a personal achievement balance, not cash or extra ranking points. Reopening a result never awards again. Complete on consecutive UTC dates to build your streak; missing a day resets the active streak, not your longest streak or credits.</p><p>You play under a generated guest name, without sharing an email or choosing a public name. Your guest session is saved only in this browser. Clearing it or using another browser creates a different identity and does not transfer streaks. Rankings are real shared server data, not sample scores; anonymous guest limits are not a guarantee against bots or multiple guest accounts.</p></details>
+    <button id="daily-back" type="button" class="text-button">Back to practice</button>
+  </dialog>
 
   <dialog id="audio-dialog" class="game-dialog audio-dialog" aria-labelledby="audio-title">
     <button class="dialog-close" type="button" data-close-dialog="audio-dialog" aria-label="Close audio controls"><svg class="icon"><use href="#i-close"/></svg></button>

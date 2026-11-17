@@ -534,6 +534,10 @@
   });
   $('music-toggle').addEventListener('click', () => changeAudio({ music: !audio.settings.music }));
   $('help-button').addEventListener('click', () => $('help-dialog').showModal());
+  window.addEventListener('flipside:daily-open', () => {
+    clearTimeout(celebrationTimeout); celebrationTimeout = null;
+    if (game.status === 'playing') pauseGame();
+  });
   document.querySelectorAll('[data-close-dialog]').forEach(button => {
     button.addEventListener('click', () => $(button.dataset.closeDialog).close());
   });

@@ -2,15 +2,21 @@
   "name": "flipside-memory",
   "version": "1.0.0",
   "private": true,
-  "description": "A colorful, accessible memory matching game with six collections and a local personal leaderboard.",
+  "description": "A colorful memory matching game with six collections, local practice, and real online UTC daily challenges.",
   "engines": { "node": ">=22" },
   "scripts": {
     "dev": "node scripts/serve.cjs",
+    "dev:daily": "node scripts/daily-dev.cjs",
     "build": "node scripts/build.cjs",
     "test": "node --test tests/*.test.cjs",
     "test:browser": "node tests/browser.cjs && node tests/browser-themes.cjs && node tests/browser-player.cjs && node tests/browser-release.cjs",
     "test:release": "node tests/browser-release.cjs"
   },
+  "dependencies": {
+    "firebase-admin": "13.10.0",
+    "@vercel/functions": "3.11.3"
+  },
+  "overrides": { "uuid": "11.1.1" },
   "devDependencies": {
     "@fontsource-variable/dm-sans": "5.3.0",
     "@fontsource-variable/manrope": "5.3.0",
